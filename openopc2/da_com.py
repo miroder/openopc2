@@ -79,7 +79,9 @@ class OpcCom:
             log.error(f"Error Connecting OPC Client Com interface: Server: '{self.server}', Host: '{self.host}', Error: '{error}'")
 
             log.exception('Error connecting OPC Client', exc_info=True)
-            pass
+            self.connect(self.server, self.host)
+            return
+
         self.groups = self.opc_client.OPCGroups
         self.client_name = self.opc_client.ClientName
         self.server_name = self.opc_client.ServerName
