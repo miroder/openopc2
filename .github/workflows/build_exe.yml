@@ -10,10 +10,10 @@ jobs:
       - name: Set up Python (32-bit)
         uses: actions/setup-python@v5
         with:
-          python-version: 3.8
+          python-version: 3.10
           architecture: x86
       - name: Install poetry
-        uses: snok/install-poetry@v1
+        uses: abatilo/actions-poetry@v4
       - name: Register gbda_aut.dll
         run: |
           Copy-Item .\lib\gbda_aut.dll C:\Windows\System32\
