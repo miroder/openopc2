@@ -1,6 +1,9 @@
 name: Build EXE
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - "develop"    # 或者 "master"，根据你的默认分支名称修改
 
 jobs:
   build:
@@ -26,7 +29,6 @@ jobs:
       - name: Create GitHub Release
         uses: ncipollo/release-action@v1
         with:
-          tag: 'v1.0.0'
           artifacts: |
             dist/OpenOpcCli.exe
             dist/OpenOpcServer.exe
