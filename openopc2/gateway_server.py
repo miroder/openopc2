@@ -106,24 +106,37 @@ def main(host, port):
 
 
 def run_server_with_restart(host, port, max_retries=100, retry_interval=1):
-    """运行服务器，并在出错时自动重启"""
     retry_count = 0
 
     while retry_count < max_retries:
+        pyro_daemon = None
         try:
             pyro_daemon = main(host, port)
+            log.info("服务器启动成功")
             pyro_daemon.requestLoop()
-            retry_count = 0
-        except Exception as e:
-            log.error(f"服务器发生错误: {str(e)}")
-            retry_count += 1
+            log.info("服务器正常退出")
+            break
 
-            if retry_count < max_retries:
-                log.info(f"尝试重启服务器 ({retry_count}/{max_retries})，等待 {retry_interval} 秒...")
-                time.sleep(retry_interval)
-            else:
-                log.error(f"已达到最大重试次数 {max_retries}，停止重启尝试")
-                raise e
+        except (KeyboardInterrupt, SystemExit):
+            log.info("收到退出信号，停止服务器")
+            raise
+
+        except Exception as e:
+            retry_count += 1
+            log.exception("服务器发生错误")
+
+            if retry_count >= max_retries:
+                log.error("达到最大重试次数，停止重启")
+                raise
+
+            time.sleep(retry_interval)
+
+        finally:
+            if pyro_daemon:
+                try:
+                    pyro_daemon.close()
+                except Exception:
+                    pass
 
 
 if __name__ == '__main__':
