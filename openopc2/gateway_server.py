@@ -105,39 +105,6 @@ def main(host, port):
     return pyro_daemon
 
 
-def run_server_with_restart(host, port, max_retries=100, retry_interval=1):
-    retry_count = 0
-
-    while retry_count < max_retries:
-        pyro_daemon = None
-        try:
-            pyro_daemon = main(host, port)
-            log.info("服务器启动成功")
-            pyro_daemon.requestLoop()
-            log.info("服务器正常退出")
-            break
-
-        except (KeyboardInterrupt, SystemExit):
-            log.info("收到退出信号，停止服务器")
-            raise
-
-        except Exception as e:
-            retry_count += 1
-            log.exception("服务器发生错误")
-
-            if retry_count >= max_retries:
-                log.error("达到最大重试次数，停止重启")
-                raise
-
-            time.sleep(retry_interval)
-
-        finally:
-            if pyro_daemon:
-                try:
-                    pyro_daemon.close()
-                except Exception:
-                    pass
-
-
 if __name__ == '__main__':
-    run_server_with_restart(OpenOpcConfig().OPC_GATEWAY_HOST, OpenOpcConfig().OPC_GATEWAY_PORT)
+    pyro_daemon = main(OpenOpcConfig().OPC_GATEWAY_HOST, OpenOpcConfig().OPC_GATEWAY_PORT)
+    pyro_daemon.requestLoop()
