@@ -151,12 +151,14 @@ class OpcDaClient:
         """Connect to the specified OPC server"""
 
         log.info(f"OPC DA OpcDaClient connecting to {opc_server} {opc_host}")
-        self._opc.connect(opc_server, opc_host)
-        self.connected = True
-
+        if self._opc.connect(opc_server, opc_host):
+            self.connected = True
+        else:
+            self.connected = False
+            return False
         # With some OPC servers, the next OPC call immediately after Connect()
         # will occationally fail.  Sleeping for 1/100 second seems to fix this.
-        time.sleep(0.01)
+        time.sleep(0.1)
 
         self.opc_host = socket.gethostname() if opc_host == 'localhost' else opc_host
 
@@ -168,6 +170,7 @@ class OpcDaClient:
         self._group_server_handles = {}
         self._group_handles_tag = {}
         self._group_hooks = {}
+        return True
 
     def GUID(self):
         return self._open_guid
