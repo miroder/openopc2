@@ -63,7 +63,7 @@ def get_connected_da_client(
         if client.connect(opc_server, opc_host):
             return client
         else:
-            return None
+            raise OpcClientNotConnected(f"Cannot connect to OPC server {opc_server} on host {opc_host}")
     raise NotImplementedError(f"Protocol mode {protocol_mode} is unrecognized")
 
 
