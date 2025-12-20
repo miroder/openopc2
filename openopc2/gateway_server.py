@@ -105,6 +105,26 @@ def main(host, port):
     return pyro_daemon
 
 
+def run_server_with_restart(host, port, max_retries=100, retry_interval=1):
+    """运行服务器，并在出错时自动重启"""
+    retry_count = 0
+
+    while retry_count < max_retries:
+        try:
+            pyro_daemon = main(host, port)
+            pyro_daemon.requestLoop()
+            retry_count = 0
+        except Exception as e:
+            log.error(f"服务器发生错误: {str(e)}")
+            retry_count += 1
+
+            if retry_count < max_retries:
+                log.info(f"尝试重启服务器 ({retry_count}/{max_retries})，等待 {retry_interval} 秒...")
+                time.sleep(retry_interval)
+            else:
+                log.error(f"已达到最大重试次数 {max_retries}，停止重启尝试")
+                raise e
+
+
 if __name__ == '__main__':
-    pyro_daemon = main(OpenOpcConfig().OPC_GATEWAY_HOST, OpenOpcConfig().OPC_GATEWAY_PORT)
-    pyro_daemon.requestLoop()
+    run_server_with_restart(OpenOpcConfig().OPC_GATEWAY_HOST, OpenOpcConfig().OPC_GATEWAY_PORT)

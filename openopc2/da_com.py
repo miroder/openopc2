@@ -72,16 +72,14 @@ class OpcCom:
     def connect(self, server: str | None, host: str):
         self.server = server
         self.host = host
-        b_connected = True
         try:
             log.info(f"Connecting OPC Client Com interface: '{self.server}', '{self.host}'")
             self.opc_client.Connect(self.server, self.host)
         except Exception as error:
             log.error(f"Error Connecting OPC Client Com interface: Server: '{self.server}', Host: '{self.host}', Error: '{error}'")
-            log.exception('Error connecting OPC Client', exc_info=True)
-            b_connected = False
-            pass
 
+            log.exception('Error connecting OPC Client', exc_info=True)
+            pass
         self.groups = self.opc_client.OPCGroups
         self.client_name = self.opc_client.ClientName
         self.server_name = self.opc_client.ServerName
@@ -92,8 +90,6 @@ class OpcCom:
         self.start_time = self.opc_client.StartTime
         self.current_time = self.opc_client.CurrentTime
         self.vendor_info = self.opc_client.VendorInfo
-
-        return b_connected
 
     def create_browser(self):
         return self.opc_client.CreateBrowser()

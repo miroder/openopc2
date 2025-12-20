@@ -60,10 +60,8 @@ def get_connected_da_client(
     if ProtocolMode.GATEWAY == protocol_mode:
         client = cast(OpcDaClient, OpenOpcGatewayProxy(gateway_host, gateway_port).get_opc_da_client_proxy())
     if client is not None:
-        if client.connect(opc_server, opc_host):
-            return client
-        else:
-            raise OpcClientNotConnected(f"Cannot connect to OPC server {opc_server} on host {opc_host}")
+        client.connect(opc_server, opc_host)
+        return client
     raise NotImplementedError(f"Protocol mode {protocol_mode} is unrecognized")
 
 
