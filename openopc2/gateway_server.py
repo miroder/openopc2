@@ -1,6 +1,6 @@
 
 import time
-
+import sys
 import Pyro5.server
 from Pyro5.api import register_class_to_dict, register_dict_to_class
 
@@ -107,4 +107,14 @@ def main(host, port):
 
 if __name__ == '__main__':
     pyro_daemon = main(OpenOpcConfig().OPC_GATEWAY_HOST, OpenOpcConfig().OPC_GATEWAY_PORT)
-    pyro_daemon.requestLoop()
+    try:
+        print("Server is running...")
+        pyro_daemon.requestLoop()
+    except KeyboardInterrupt:
+        print("User stopped the server.")
+    except Exception as e:
+        print(f"Server crashed with error: {e}")
+    finally:
+        print("Shutting down daemon...")
+        sys.exit(1)
+

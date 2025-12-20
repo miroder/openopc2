@@ -1,6 +1,6 @@
 import os
 import string
-
+import sys
 import Pyro5.core
 
 from openopc2.exceptions import OPCError
@@ -78,8 +78,7 @@ class OpcCom:
         except Exception as error:
             log.error(f"Error Connecting OPC Client Com interface: Server: '{self.server}', Host: '{self.host}', Error: '{error}'")
             log.exception('Error connecting OPC Client', exc_info=True)
-            import sys
-            sys.exit()
+            sys.exit(1)
             pass
         self.groups = self.opc_client.OPCGroups
         self.client_name = self.opc_client.ClientName

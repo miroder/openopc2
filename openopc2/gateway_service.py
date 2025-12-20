@@ -49,13 +49,17 @@ class OpcService(win32serviceutil.ServiceFramework):
     def SvcDoRun(self):
         open_opc_config = OpenOpcConfig().print_config()
         servicemanager.LogInfoMsg(f'\nOpenOpcService Starting service on port {self.port}')
-        daemon = opc_gateway_server_main(host=self.host, port=self.port)
-        socks = daemon.sockets
-        self.pyro_daemon = daemon
-        self.ReportServiceStatus(win32service.SERVICE_RUNNING)
-        daemon.requestLoop()
+        try:
+            daemon = opc_gateway_server_main(host=self.host, port=self.port)
+            socks = daemon.sockets
+            self.pyro_daemon = daemon
+            self.ReportServiceStatus(win32service.SERVICE_RUNNING)
+            daemon.requestLoop()
+        except Exception as e:
+            servicemanager.LogErrorMsg(f"Service crashed: {e}")
+            sys.exit(1)
 
-        # while win32event.WaitForSingleObject(self.hWaitStop, 0) != win32event.WAIT_OBJECT_0:
+            # while win32event.WaitForSingleObject(self.hWaitStop, 0) != win32event.WAIT_OBJECT_0:
         #     ins, outs, exs = select.select(socks, [], [], 1)
         #     if ins:
         #         daemon.events(ins)
