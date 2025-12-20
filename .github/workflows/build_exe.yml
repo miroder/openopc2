@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - "develop"    # 或者 "master"，根据你的默认分支名称修改
+permissions:
+  contents: write # 必须权限：允许修改 Release 和 Tag
 
 jobs:
   build:
@@ -29,6 +31,7 @@ jobs:
       - name: Create GitHub Release
         uses: ncipollo/release-action@v1
         with:
+          tag: "latest"
           artifacts: |
             dist/OpenOpcCli.exe
             dist/OpenOpcServer.exe
